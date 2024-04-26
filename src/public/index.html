@@ -1,10 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport' />
-    <title>WS scrcpy</title>
+    <meta content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'
+        name='viewport' />
+    <title>Vendor</title>
+    <style>
+        #draggable-box {
+            width: 400px;
+            height: 400px;
+            background-color: lightblue;
+            position: absolute;
+            top: 50px;
+            left: 600px;
+            cursor: move;
+            padding: 12px;
+            overflow-y: scroll;
+            border-radius: 5px;
+        }
+
+        #lastActiveUser {
+            list-style-type: none;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        .lastActiveUser_li {
+            padding: 10px;
+            background-color: #f0f0f0;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+
+        const sendPingToServer = async () => {
+            const response = await fetch('http://10.250.82.31:3000/admin/ping/');
+            return response
+        }
+
+        const timeLimitInMinutes = 30;
+        const getAllUsersPing = async () => {
+            const response = await fetch(`http://10.250.82.31:3000/admin/getactiveusers?timeLimitInMinutes=${timeLimitInMinutes}`);
+            const data = await response.json();
+            return data
+        }
+
+        const isTabFocused = () => {
+            return !document.hidden;
+        }
+
+        const updateList = (items) => {
+            const ul = document.getElementById('lastActiveUser');
+            ul.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.classList.add('lastActiveUser_li');
+                li.textContent = item;
+                ul.appendChild(li);
+            });
+        }
+
+        const alertMessage = (txt) => {
+            return txt.endsWith("seconds ago") ? '🚨📢' : ''
+        }
+
+        const main = () => {
+            if (isTabFocused()) {
+                sendPingToServer()
+                    .then(v => console.error("===> Ping to server: ", v))
+                    .catch(e => console.error("Ping Error: ", e));
+                getAllUsersPing()
+                    .then(v => {
+                        document.getElementById('lastActiveUserHeader').innerHTML = `${v.length} Active Users (in last ${timeLimitInMinutes} mins)`
+                        updateList(v.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`))
+                    })
+                    .catch(e => console.error("Users Error: ", e));
+            }
+        }
+
+        setInterval(main, 5000);
+    </script>
 </head>
+
 <body>
+    <div id="draggable-box">
+        <h2 id="lastActiveUserHeader">Loading...</h2>
+        <ul id="lastActiveUser">
+        </ul>
+    </div>
 </body>
+<script>
+    const draggableBox = document.getElementById('draggable-box');
+    let offsetX, offsetY;
+    let isDragging = false;
+
+    draggableBox.addEventListener('mousedown', (event) => {
+        isDragging = true;
+        offsetX = event.clientX - draggableBox.getBoundingClientRect().left;
+        offsetY = event.clientY - draggableBox.getBoundingClientRect().top;
+    });
+
+    document.addEventListener('mousemove', (event) => {
+        if (isDragging) {
+            const newX = event.clientX - offsetX;
+            const newY = event.clientY - offsetY;
+            draggableBox.style.left = `${newX}px`;
+            draggableBox.style.top = `${newY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+</script>
+
 </html>

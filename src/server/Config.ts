@@ -5,7 +5,8 @@ import { Configuration, HostItem, ServerItem } from '../types/Configuration';
 import { EnvName } from './EnvName';
 import YAML from 'yaml';
 
-const DEFAULT_PORT = 8000;
+const DEFAULT_PORT = 3500;
+// const DEFAULT_PORT = 8000;
 
 const YAML_RE = /^.+\.(yaml|yml)$/i;
 const JSON_RE = /^.+\.(json|js)$/i;
@@ -107,7 +108,7 @@ export class Config {
         return fs.readFileSync(absolutePath).toString();
     }
 
-    constructor(private fullConfig: Required<Configuration>) {}
+    constructor(private fullConfig: Required<Configuration>) { }
 
     public getHostList(): HostItem[] {
         if (!this.fullConfig.remoteHostList || !this.fullConfig.remoteHostList.length) {
