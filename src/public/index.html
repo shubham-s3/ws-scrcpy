@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'
-        name='viewport' />
+    <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+        name="viewport" />
     <title>Vendor</title>
     <style>
         #draggable-box {
@@ -15,9 +15,8 @@
             top: 50px;
             left: 600px;
             cursor: move;
-            padding: 12px;
-            overflow-y: scroll;
             border-radius: 5px;
+            border: 1px solid white;
         }
 
         #lastActiveUser {
@@ -32,77 +31,77 @@
             margin-bottom: 5px;
             border-radius: 5px;
         }
+
+        .tabs {
+            display: flex;
+        }
+
+        .tab-button {
+            padding: 12px 4px;
+            background-color: #fff;
+            color: black;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex: 1;
+            font-size: 12px;
+            border: none;
+        }
+
+        .tab-button:hover {
+            background-color: #ddd;
+        }
+
+        .tab-button:focus {
+            outline: none;
+            background-color: #ddd;
+        }
+
+        .tab-button.active {
+            background-color: lightblue;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 0 12px 12px 12px;
+            border-top: 1px solid white;
+            border-radius: 0 0 5px 5px;
+            overflow-y: scroll;
+            height: 81%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
-    <script>
-
-        const sendPingToServer = async () => {
-            const response = await fetch('http://10.250.82.31:3000/admin/ping/');
-            return response
-        }
-
-        const timeLimitInMinutes = 30;
-        const getAllUsersPing = async () => {
-            const response = await fetch(`http://10.250.82.31:3000/admin/getactiveusers?timeLimitInMinutes=${timeLimitInMinutes}`);
-            const data = await response.json();
-            return data
-        }
-
-        const isTabFocused = () => {
-            return !document.hidden;
-        }
-
-        const updateList = (items) => {
-            const ul = document.getElementById('lastActiveUser');
-            ul.innerHTML = '';
-            items.forEach(item => {
-                const li = document.createElement('li');
-                li.classList.add('lastActiveUser_li');
-                li.textContent = item;
-                ul.appendChild(li);
-            });
-        }
-
-        const alertMessage = (txt) => {
-            return txt.endsWith("seconds ago") ? '🚨📢' : ''
-        }
-
-        const main = () => {
-            if (isTabFocused()) {
-                sendPingToServer()
-                    .then(v => console.error("===> Ping to server: ", v))
-                    .catch(e => console.error("Ping Error: ", e));
-                getAllUsersPing()
-                    .then(v => {
-                        document.getElementById('lastActiveUserHeader').innerHTML = `${v.length} Active Users (in last ${timeLimitInMinutes} mins)`
-                        updateList(v.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`))
-                    })
-                    .catch(e => console.error("Users Error: ", e));
-            }
-        }
-
-        main();
-        setInterval(main, 5000);
-    </script>
 </head>
 
 <body>
     <div id="draggable-box">
-        <h2 id="lastActiveUserHeader">Loading...</h2>
-        <ul id="lastActiveUser">
-        </ul>
+        <div class="tabs">
+            <button id="tab1" class="tab-button active">Active users</button>
+            <button id="tab2" class="tab-button">Install Apk</button>
+            <button id="tab3" class="tab-button">API Logger</button>
+        </div>
+
+        <div class="tab-content active" id="tab-content1">
+            <ul id="lastActiveUser"></ul>
+        </div>
+        <div class="tab-content" id="tab-content2">Tab 2 Content</div>
+        <div class="tab-content" id="tab-content3">Tab 3 Content</div>
     </div>
 </body>
 <script>
+
+    // Draggable container styles
     const draggableBox = document.getElementById('draggable-box');
     let offsetX, offsetY;
     let isDragging = false;
-
     draggableBox.addEventListener('mousedown', (event) => {
         isDragging = true;
         offsetX = event.clientX - draggableBox.getBoundingClientRect().left;
         offsetY = event.clientY - draggableBox.getBoundingClientRect().top;
     });
-
     document.addEventListener('mousemove', (event) => {
         if (isDragging) {
             const newX = event.clientX - offsetX;
@@ -111,10 +110,76 @@
             draggableBox.style.top = `${newY}px`;
         }
     });
-
     document.addEventListener('mouseup', () => {
         isDragging = false;
     });
+
+    // Tab handling
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    function handleClick(event) {
+        // Remove active class from all tab buttons and tab contents
+        tabButtons.forEach(button => button.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // Add active class to the clicked tab button and corresponding tab content
+        const tabId = event.target.id;
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById(`tab-content${tabId.slice(-1)}`).classList.add('active');
+    }
+    tabButtons.forEach(button => button.addEventListener('click', handleClick));
+
+
+</script>
+
+<script>
+    const sendPingToServer = async () => {
+        const response = await fetch('http://10.250.82.31:3000/admin/ping/');
+        return response
+    }
+
+    const timeLimitInMinutes = 1130;
+    const getAllUsersPing = async () => {
+        const response = await fetch(`http://10.250.82.31:3000/admin/getactiveusers?timeLimitInMinutes=${timeLimitInMinutes}`);
+        const data = await response.json();
+        return data
+    }
+
+    const isTabFocused = () => {
+        return !document.hidden;
+    }
+
+    const updateList = (items) => {
+        const ul = document.getElementById('lastActiveUser');
+        ul.innerHTML = '';
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.classList.add('lastActiveUser_li');
+            li.textContent = item;
+            ul.appendChild(li);
+        });
+    }
+
+    const alertMessage = (txt) => {
+        return txt.endsWith("seconds ago") ? '🚨📢' : ''
+    }
+
+    const main = () => {
+        if (isTabFocused()) {
+            sendPingToServer()
+                .then(v => console.error("===> Ping to server: ", v))
+                .catch(e => console.error("Ping Error: ", e));
+            getAllUsersPing()
+                .then(v => {
+                    document.getElementById('tab1').innerHTML = `Active Users (${v.length})`
+                    updateList(v.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`))
+                })
+                .catch(e => console.error("Users Error: ", e));
+        }
+    }
+
+    main();
+    setInterval(main, 5000);
 </script>
 
 </html>
