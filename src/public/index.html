@@ -213,7 +213,7 @@
     const main = () => {
         if (isTabFocused()) {
             sendPingToServer()
-                .then(v => console.error("===> Ping to server: ", v))
+                .then()
                 .catch(e => console.error("Ping Error: ", e));
             getAllUsersPing()
                 .then(v => {
