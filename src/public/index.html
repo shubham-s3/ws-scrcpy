@@ -73,27 +73,58 @@
         .tab-content.active {
             display: block;
         }
+
+        .spacing {
+            margin: 8px;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #3498db;
+            /* Blue */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
 <body>
     <div id="draggable-box">
-        <div class="tabs">
-            <button id="tab1" class="tab-button active">Active users</button>
-            <button id="tab2" class="tab-button">Install Apk</button>
-            <button id="tab3" class="tab-button">API Logger</button>
-        </div>
-
+        <div class="tabs"><button id="tab1" class="tab-button active">Active users</button> <button id="tab2"
+                class="tab-button">Install Apk</button> <button id="tab3" class="tab-button">API Logger</button></div>
         <div class="tab-content active" id="tab-content1">
             <ul id="lastActiveUser"></ul>
         </div>
-        <div class="tab-content" id="tab-content2">Tab 2 Content</div>
-        <div class="tab-content" id="tab-content3">Tab 3 Content</div>
+        <div class="tab-content" id="tab-content2">
+            <br />
+            <label class="spacing" for="inputField">Enter your Bitrise build number:</label>
+            <input class="spacing" type="number" id="apkIntallerInput" name="inputField" placeholder="1396" required>
+            <p class="spacing">Note: It may take upto 30 seconds, please have patience</p>
+            <button class="spacing" id="apkIntallerInput-submit" onclick="installApk()">Submit</button>
+            <p class="spacing" id="apkIntallerInput-responseText"></p>
+            <div id="apkIntallerInput-loader" class="loader" style="display: none;"></div>
+        </div>
+        <div class="tab-content" id="tab-content3">
+            <h1><a href="http://10.250.82.31:3000/network/" target="_blank">Click to open in new tab</a></h1>
+        </div>
     </div>
 </body>
-<script>
-
-    // Draggable container styles
+<script>// Draggable container styles
     const draggableBox = document.getElementById('draggable-box');
     let offsetX, offsetY;
     let isDragging = false;
@@ -130,19 +161,34 @@
     tabButtons.forEach(button => button.addEventListener('click', handleClick));
 
 
-</script>
-
-<script>
+    // Handle tabs functionality
+    const timeLimitInMinutes = 1130;
     const sendPingToServer = async () => {
         const response = await fetch('http://10.250.82.31:3000/admin/ping/');
         return response
     }
-
-    const timeLimitInMinutes = 1130;
     const getAllUsersPing = async () => {
         const response = await fetch(`http://10.250.82.31:3000/admin/getactiveusers?timeLimitInMinutes=${timeLimitInMinutes}`);
         const data = await response.json();
         return data
+    }
+    const installApk = async () => {
+        try {
+            const bitriseBuildNumber = document.getElementById('apkIntallerInput').value;
+            if (bitriseBuildNumber) {
+                document.getElementById('apkIntallerInput-loader').style.display = 'block';
+                document.getElementById('apkIntallerInput-submit').style.display = 'none';
+                const response = await fetch(`http://10.250.82.31:3000/admin/installapk/${bitriseBuildNumber}`);
+                document.getElementById('apkIntallerInput-responseText').innerHTML = `Response - ${response.statusText} (${response.status})`;
+            } else {
+                throw new Error("Check value of input")
+            }
+        } catch (e) {
+            console.error("error: ", e)
+            document.getElementById('apkIntallerInput-responseText').innerHTML = e;
+        }
+        document.getElementById('apkIntallerInput-loader').style.display = 'none';
+        document.getElementById('apkIntallerInput-submit').style.display = 'block';
     }
 
     const isTabFocused = () => {
@@ -179,7 +225,6 @@
     }
 
     main();
-    setInterval(main, 5000);
-</script>
+    setInterval(main, 5000);</script>
 
 </html>
