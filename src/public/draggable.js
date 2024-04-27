@@ -108,12 +108,6 @@ window.addEventListener('load', function () {
         errorMessageElement.textContent = message;
         modal.style.display = "block";
     }
-    function closeErrorModal() {
-        var modal = document.getElementById("errorModal");
-        modal.style.display = "none";
-    }
-
-    this.document.getElementById("errorModal-close-btn").onclick = closeErrorModal
 
     const main = () => {
         if (isTabFocused()) {
