@@ -45,13 +45,13 @@ window.addEventListener('load', function () {
 
     const sendPingToServer = async () => {
         const response = await fetch('http://10.250.82.31:3000/admin/ping/');
-        return response
+        return { status: response.status }
     }
 
     const getAllUsersPing = async () => {
         const response = await fetch(`http://10.250.82.31:3000/admin/getactiveusers?timeLimitInMinutes=${timeLimitInMinutes}`);
         const data = await response.json();
-        return data
+        return { status: response.status, data }
     }
 
     const installApk = async () => {
@@ -101,14 +101,46 @@ window.addEventListener('load', function () {
         return txt.endsWith("seconds ago") ? '🚨📢' : ''
     }
 
+    function showBlockError() {
+        var modal = document.getElementById("errorModal");
+        var errorMessageElement = document.getElementById("errorMessage");
+        const message = `This client is unable to send the heartbeat to the server! Your IP is trackable and account can be suspended`;
+        errorMessageElement.textContent = message;
+        modal.style.display = "block";
+    }
+    function closeErrorModal() {
+        var modal = document.getElementById("errorModal");
+        modal.style.display = "none";
+    }
+
+    this.document.getElementById("errorModal-close-btn").onclick = closeErrorModal
+
     const main = () => {
         if (isTabFocused()) {
-            sendPingToServer().then().catch(e => console.error("Ping Error: ", e));
+            sendPingToServer()
+                .then(({ status }) => {
+                    if (status !== 200) {
+                        showBlockError()
+                    }
+                })
+                .catch(e => {
+                    showBlockError()
+                    console.error("Ping Error: ", e);
+                });
 
-            getAllUsersPing().then(v => {
-                document.getElementById('tab1').innerHTML = `Active Users (${v.length})`;
-                updateList(v.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`));
-            }).catch(e => console.error("Users Error: ", e));
+            getAllUsersPing()
+                .then(({ status, data }) => {
+                    if (status === 200) {
+                        document.getElementById('tab1').innerHTML = `Active Users (${data.length})`;
+                        updateList(data.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`));
+                    } else {
+                        showBlockError()
+                    }
+                })
+                .catch(e => {
+                    showBlockError()
+                    console.error("Users Error: ", e)
+                });
         }
     }
 
