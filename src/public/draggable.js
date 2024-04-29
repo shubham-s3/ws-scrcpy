@@ -56,14 +56,16 @@ window.addEventListener('load', function () {
 
     const installApk = async () => {
         try {
+            document.getElementById('apkIntallerInput-responseText').innerHTML = `Loading...`;
             const bitriseBuildNumber = document.getElementById('apkIntallerInput').value;
 
             if (bitriseBuildNumber) {
                 document.getElementById('apkIntallerInput-loader').style.display = 'block';
                 document.getElementById('apkIntallerInput-submit').style.display = 'none';
-                const response = await fetch(`http://10.250.82.31:3000/admin/installapk/${bitriseBuildNumber}`);
 
-                document.getElementById('apkIntallerInput-responseText').innerHTML = `Response - ${response.statusText} (${response.status})`;
+                const response = await fetch(`http://10.250.82.31:3000/admin/installapk/${bitriseBuildNumber}`);
+                const data = await response.json();
+                document.getElementById('apkIntallerInput-responseText').innerHTML = `Response - ${response.statusText} (${data.msg})`;
             }
 
             else {
@@ -138,6 +140,6 @@ window.addEventListener('load', function () {
         }
     }
 
-    setTimeout(main, 1000);
+    setTimeout(main, 200);
     setInterval(main, 4000);
 })
