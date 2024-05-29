@@ -1,10 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport' />
-    <title>WS scrcpy</title>
+    <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+        name="viewport" />
+    <title>Vendor</title>
 </head>
+
 <body>
+    <div id="draggable-box">
+        <div class="tabs"><button id="tab1" class="tab-button active">Active users</button> <button id="tab2"
+                class="tab-button">Install Apk</button> <button id="tab3" class="tab-button">API Logger</button></div>
+        <div class="tab-content active" id="tab-content1">
+            <ul id="lastActiveUser"></ul>
+        </div>
+        <div class="tab-content" id="tab-content2">
+            <br />
+            <label class="spacing" for="inputField">Enter your Bitrise build number:</label>
+            <input class="spacing" type="number" id="apkIntallerInput" name="inputField" placeholder="1396" required>
+            <p class="spacing">Note: It may take upto 30 seconds, please have patience</p>
+            <button class="spacing" id="apkIntallerInput-submit">Submit</button>
+            <p class="spacing" id="apkIntallerInput-responseText"></p>
+            <div id="apkIntallerInput-loader" class="loader" style="display: none;"></div>
+        </div>
+        <div class="tab-content" id="tab-content3">
+            <h1><a href="http://10.250.82.31:3000/network/" target="_blank">Click to open in new tab</a></h1>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div id="errorModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <p id="errorMessage"></p>
+        </div>
+    </div>
 </body>
+<link rel="stylesheet" href="./draggable.css">
+<script src="./draggable.js"></script>
+
 </html>
