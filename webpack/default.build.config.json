@@ -10,5 +10,6 @@
   "INCLUDE_ADB_SHELL": false,
   "INCLUDE_FILE_LISTING": false,
   "INCLUDE_APPL": false,
-  "INCLUDE_GOOG": true
+  "INCLUDE_GOOG": true,
+  "PATHNAME": "/"
 }
