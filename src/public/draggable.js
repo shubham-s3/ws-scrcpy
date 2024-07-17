@@ -113,30 +113,30 @@ window.addEventListener('load', function () {
 
     const main = () => {
         if (isTabFocused()) {
-            sendPingToServer()
-                .then(({ status }) => {
-                    if (status !== 200) {
-                        showBlockError()
-                    }
-                })
-                .catch(e => {
-                    showBlockError()
-                    console.error("Ping Error: ", e);
-                });
+            // sendPingToServer()
+            //     .then(({ status }) => {
+            //         if (status !== 200) {
+            //             showBlockError()
+            //         }
+            //     })
+            //     .catch(e => {
+            //         showBlockError()
+            //         console.error("Ping Error: ", e);
+            //     });
 
-            getAllUsersPing()
-                .then(({ status, data }) => {
-                    if (status === 200) {
-                        document.getElementById('tab1').innerHTML = `Active Users (${data.length})`;
-                        updateList(data.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`));
-                    } else {
-                        showBlockError()
-                    }
-                })
-                .catch(e => {
-                    showBlockError()
-                    console.error("Users Error: ", e)
-                });
+            // getAllUsersPing()
+            //     .then(({ status, data }) => {
+            //         if (status === 200) {
+            //             document.getElementById('tab1').innerHTML = `Active Users (${data.length})`;
+            //             updateList(data.map(o => `${o.u} (${o.t}) ${alertMessage(o.t)}`));
+            //         } else {
+            //             showBlockError()
+            //         }
+            //     })
+            //     .catch(e => {
+            //         showBlockError()
+            //         console.error("Users Error: ", e)
+            //     });
         }
     }
 
